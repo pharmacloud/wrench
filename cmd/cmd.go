@@ -21,6 +21,7 @@ package cmd
 
 import (
 	"context"
+	"os"
 	"path/filepath"
 
 	"github.com/spf13/cobra"
@@ -35,6 +36,7 @@ const (
 	flagNameDirectory         = "directory"
 	flagCredentialsFile       = "credentials_file"
 	flagNameMigrationTable    = "migration_table"
+	flagProtoDescriptorsFile  = "proto_descriptors_file"
 	flagNameSchemaFile        = "schema_file"
 	flagDDLFile               = "ddl"
 	flagDMLFile               = "dml"
@@ -53,6 +55,12 @@ func newSpannerClient(ctx context.Context, c *cobra.Command) (*spanner.Client, e
 		Database:        c.Flag(flagNameDatabase).Value.String(),
 		CredentialsFile: c.Flag(flagCredentialsFile).Value.String(),
 	}
+
+	desc, err := protoDescriptors(c)
+	if err != nil {
+		return nil, err
+	}
+	config.ProtoDescriptors = desc
 
 	client, err := spanner.NewClient(ctx, config)
 	if err != nil {
@@ -73,6 +81,12 @@ func newSpannerAdminClient(ctx context.Context, c *cobra.Command) (*spanner.Admi
 		CredentialsFile: c.Flag(flagCredentialsFile).Value.String(),
 	}
 
+	desc, err := protoDescriptors(c)
+	if err != nil {
+		return nil, err
+	}
+	config.ProtoDescriptors = desc
+
 	client, err := spanner.NewAdminClient(ctx, config)
 	if err != nil {
 		return nil, &Error{
@@ -90,4 +104,20 @@ func schemaFilePath(c *cobra.Command) string {
 		filename = defaultSchemaFileName
 	}
 	return filepath.Join(c.Flag(flagNameDirectory).Value.String(), filename)
+}
+
+func protoDescriptors(c *cobra.Command) ([]byte, error) {
+	filename := c.Flag(flagProtoDescriptorsFile).Value.String()
+	if filename == "" {
+		return nil, nil
+	}
+
+	b, err := os.ReadFile(filename)
+	if err != nil {
+		return nil, &Error{
+			err: err,
+			cmd: c,
+		}
+	}
+	return b, nil
 }

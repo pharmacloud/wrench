@@ -26,10 +26,11 @@ import (
 )
 
 type Config struct {
-	Project         string
-	Instance        string
-	Database        string
-	CredentialsFile string
+	Project          string
+	Instance         string
+	Database         string
+	CredentialsFile  string
+	ProtoDescriptors []byte
 
 	// ClientOptions is options of Spanner clients when creating the clients for both normal
 	// and admin. This options are evaluated first and can be overridden by other
