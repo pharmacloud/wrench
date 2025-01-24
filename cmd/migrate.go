@@ -33,8 +33,7 @@ import (
 )
 
 const (
-	migrationsDirName  = "migrations"
-	migrationTableName = "SchemaMigrations"
+	migrationsDirName = "migrations"
 )
 
 // migrateCmd represents the migrate command
@@ -73,6 +72,7 @@ func init() {
 	)
 
 	migrateCmd.PersistentFlags().String(flagNameDirectory, "", "Directory that migration files placed (required)")
+	migrateCmd.PersistentFlags().String(flagNameMigrationTable, defaultMigrationTableName, "Name of migration table (optional)")
 }
 
 func migrateCreate(c *cobra.Command, args []string) error {
@@ -128,7 +128,7 @@ func migrateUp(c *cobra.Command, args []string) error {
 	}
 	defer client.Close()
 
-	if err = client.EnsureMigrationTable(ctx, migrationTableName); err != nil {
+	if err = client.EnsureMigrationTable(ctx, c.Flag(flagNameMigrationTable).Value.String()); err != nil {
 		return &Error{
 			cmd: c,
 			err: err,
@@ -144,7 +144,7 @@ func migrateUp(c *cobra.Command, args []string) error {
 		}
 	}
 
-	return client.ExecuteMigrations(ctx, migrations, limit, migrationTableName)
+	return client.ExecuteMigrations(ctx, migrations, limit, c.Flag(flagNameMigrationTable).Value.String())
 }
 
 func migrateVersion(c *cobra.Command, _ []string) error {
@@ -157,14 +157,14 @@ func migrateVersion(c *cobra.Command, _ []string) error {
 	}
 	defer client.Close()
 
-	if err = client.EnsureMigrationTable(ctx, migrationTableName); err != nil {
+	if err = client.EnsureMigrationTable(ctx, c.Flag(flagNameMigrationTable).Value.String()); err != nil {
 		return &Error{
 			cmd: c,
 			err: err,
 		}
 	}
 
-	v, _, err := client.GetSchemaMigrationVersion(ctx, migrationTableName)
+	v, _, err := client.GetSchemaMigrationVersion(ctx, c.Flag(flagNameMigrationTable).Value.String())
 	if err != nil {
 		var se *spanner.Error
 		if errors.As(err, &se) && se.Code == spanner.ErrorCodeNoMigration {
@@ -206,14 +206,14 @@ func migrateSet(c *cobra.Command, args []string) error {
 	}
 	defer client.Close()
 
-	if err = client.EnsureMigrationTable(ctx, migrationTableName); err != nil {
+	if err = client.EnsureMigrationTable(ctx, c.Flag(flagNameMigrationTable).Value.String()); err != nil {
 		return &Error{
 			cmd: c,
 			err: err,
 		}
 	}
 
-	if err := client.SetSchemaMigrationVersion(ctx, uint(version), false, migrationTableName); err != nil {
+	if err := client.SetSchemaMigrationVersion(ctx, uint(version), false, c.Flag(flagNameMigrationTable).Value.String()); err != nil {
 		return &Error{
 			cmd: c,
 			err: err,
