@@ -93,9 +93,10 @@ func (c *Client) CreateDatabase(ctx context.Context, filename string, ddl []byte
 	}
 
 	createReq := &databasepb.CreateDatabaseRequest{
-		Parent:          fmt.Sprintf("projects/%s/instances/%s", c.config.Project, c.config.Instance),
-		CreateStatement: fmt.Sprintf("CREATE DATABASE `%s`", c.config.Database),
-		ExtraStatements: statements,
+		Parent:           fmt.Sprintf("projects/%s/instances/%s", c.config.Project, c.config.Instance),
+		CreateStatement:  fmt.Sprintf("CREATE DATABASE `%s`", c.config.Database),
+		ExtraStatements:  statements,
+		ProtoDescriptors: c.config.ProtoDescriptors,
 	}
 
 	op, err := c.spannerAdminClient.CreateDatabase(ctx, createReq)
@@ -211,8 +212,9 @@ func (c *Client) ApplyDDLFile(ctx context.Context, filename string, ddl []byte) 
 
 func (c *Client) ApplyDDL(ctx context.Context, statements []string) error {
 	req := &databasepb.UpdateDatabaseDdlRequest{
-		Database:   c.config.URL(),
-		Statements: statements,
+		Database:         c.config.URL(),
+		Statements:       statements,
+		ProtoDescriptors: c.config.ProtoDescriptors,
 	}
 
 	op, err := c.spannerAdminClient.UpdateDatabaseDdl(ctx, req)
