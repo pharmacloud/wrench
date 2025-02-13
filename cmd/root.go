@@ -40,6 +40,7 @@ var (
 	database                  string
 	directory                 string
 	schemaFile                string
+	migrationTableName        string
 	credentialsFile           string
 	protoDescriptorsFile      string
 	impersonateServiceAccount string
@@ -74,6 +75,7 @@ func init() {
 	rootCmd.PersistentFlags().StringVar(&database, flagNameDatabase, spannerDatabaseID(), "Cloud Spanner database name (optional. if not set, will use $SPANNER_DATABASE_ID value)")
 	rootCmd.PersistentFlags().StringVar(&directory, flagNameDirectory, "", "Directory that schema file placed (required)")
 	rootCmd.PersistentFlags().StringVar(&schemaFile, flagNameSchemaFile, "", "Name of schema file (optional. if not set, will use default 'schema.sql' file name)")
+	rootCmd.PersistentFlags().StringVar(&migrationTableName, flagNameMigrationTable, defaultMigrationTableName, "Directory that schema file placed (required)")
 	rootCmd.PersistentFlags().StringVar(&credentialsFile, flagCredentialsFile, "", "Specify Credentials File")
 	rootCmd.PersistentFlags().StringVar(&protoDescriptorsFile, flagProtoDescriptorsFile, "", "Specify Proto Descriptors File")
 	rootCmd.PersistentFlags().StringVar(&impersonateServiceAccount, flagImpersonateServiceAccount, "", "Specify impersonate service account")
