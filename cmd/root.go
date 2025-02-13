@@ -35,14 +35,15 @@ var (
 )
 
 var (
-	project              string
-	instance             string
-	database             string
-	directory            string
-	schemaFile           string
-	credentialsFile      string
-	protoDescriptorsFile string
-	timeout              time.Duration
+	project                   string
+	instance                  string
+	database                  string
+	directory                 string
+	schemaFile                string
+	credentialsFile           string
+	protoDescriptorsFile      string
+	impersonateServiceAccount string
+	timeout                   time.Duration
 )
 
 var rootCmd = &cobra.Command{
@@ -75,6 +76,7 @@ func init() {
 	rootCmd.PersistentFlags().StringVar(&schemaFile, flagNameSchemaFile, "", "Name of schema file (optional. if not set, will use default 'schema.sql' file name)")
 	rootCmd.PersistentFlags().StringVar(&credentialsFile, flagCredentialsFile, "", "Specify Credentials File")
 	rootCmd.PersistentFlags().StringVar(&protoDescriptorsFile, flagProtoDescriptorsFile, "", "Specify Proto Descriptors File")
+	rootCmd.PersistentFlags().StringVar(&impersonateServiceAccount, flagImpersonateServiceAccount, "", "Specify impersonate service account")
 	rootCmd.PersistentFlags().DurationVar(&timeout, flagTimeout, time.Hour, "Context timeout")
 
 	rootCmd.Version = versionInfo()

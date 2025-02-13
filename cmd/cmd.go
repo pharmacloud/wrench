@@ -30,30 +30,32 @@ import (
 )
 
 const (
-	flagNameProject           = "project"
-	flagNameInstance          = "instance"
-	flagNameDatabase          = "database"
-	flagNameDirectory         = "directory"
-	flagCredentialsFile       = "credentials_file"
-	flagNameMigrationTable    = "migration_table"
-	flagProtoDescriptorsFile  = "proto_descriptors_file"
-	flagNameSchemaFile        = "schema_file"
-	flagDDLFile               = "ddl"
-	flagDMLFile               = "dml"
-	flagPartitioned           = "partitioned"
-	flagPriority              = "priority"
-	flagNode                  = "node"
-	flagTimeout               = "timeout"
-	defaultSchemaFileName     = "schema.sql"
-	defaultMigrationTableName = "SchemaMigrations"
+	flagNameProject               = "project"
+	flagNameInstance              = "instance"
+	flagNameDatabase              = "database"
+	flagNameDirectory             = "directory"
+	flagCredentialsFile           = "credentials_file"
+	flagNameMigrationTable        = "migration_table"
+	flagProtoDescriptorsFile      = "proto_descriptors_file"
+	flagImpersonateServiceAccount = "impersonate_service_account"
+	flagNameSchemaFile            = "schema_file"
+	flagDDLFile                   = "ddl"
+	flagDMLFile                   = "dml"
+	flagPartitioned               = "partitioned"
+	flagPriority                  = "priority"
+	flagNode                      = "node"
+	flagTimeout                   = "timeout"
+	defaultSchemaFileName         = "schema.sql"
+	defaultMigrationTableName     = "SchemaMigrations"
 )
 
 func newSpannerClient(ctx context.Context, c *cobra.Command) (*spanner.Client, error) {
 	config := &spanner.Config{
-		Project:         c.Flag(flagNameProject).Value.String(),
-		Instance:        c.Flag(flagNameInstance).Value.String(),
-		Database:        c.Flag(flagNameDatabase).Value.String(),
-		CredentialsFile: c.Flag(flagCredentialsFile).Value.String(),
+		Project:                   c.Flag(flagNameProject).Value.String(),
+		Instance:                  c.Flag(flagNameInstance).Value.String(),
+		Database:                  c.Flag(flagNameDatabase).Value.String(),
+		CredentialsFile:           c.Flag(flagCredentialsFile).Value.String(),
+		ImpersonateServiceAccount: c.Flag(flagImpersonateServiceAccount).Value.String(),
 	}
 
 	desc, err := protoDescriptors(c)
@@ -75,10 +77,11 @@ func newSpannerClient(ctx context.Context, c *cobra.Command) (*spanner.Client, e
 
 func newSpannerAdminClient(ctx context.Context, c *cobra.Command) (*spanner.AdminClient, error) {
 	config := &spanner.Config{
-		Project:         c.Flag(flagNameProject).Value.String(),
-		Instance:        c.Flag(flagNameInstance).Value.String(),
-		Database:        c.Flag(flagNameDatabase).Value.String(),
-		CredentialsFile: c.Flag(flagCredentialsFile).Value.String(),
+		Project:                   c.Flag(flagNameProject).Value.String(),
+		Instance:                  c.Flag(flagNameInstance).Value.String(),
+		Database:                  c.Flag(flagNameDatabase).Value.String(),
+		CredentialsFile:           c.Flag(flagCredentialsFile).Value.String(),
+		ImpersonateServiceAccount: c.Flag(flagImpersonateServiceAccount).Value.String(),
 	}
 
 	desc, err := protoDescriptors(c)

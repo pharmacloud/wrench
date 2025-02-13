@@ -6,6 +6,7 @@ import (
 
 	instancev1 "cloud.google.com/go/spanner/admin/instance/apiv1"
 	instancepb "cloud.google.com/go/spanner/admin/instance/apiv1/instancepb"
+	"google.golang.org/api/impersonate"
 	"google.golang.org/api/option"
 )
 
@@ -18,6 +19,17 @@ func NewAdminClient(ctx context.Context, config *Config) (*AdminClient, error) {
 	opts := make([]option.ClientOption, 0)
 	if config.CredentialsFile != "" {
 		opts = append(opts, option.WithCredentialsFile(config.CredentialsFile))
+	}
+
+	if config.ImpersonateServiceAccount != "" {
+		ts, err := impersonate.CredentialsTokenSource(ctx, impersonate.CredentialsConfig{
+			TargetPrincipal: config.ImpersonateServiceAccount,
+			Scopes:          []string{"https://www.googleapis.com/auth/cloud-platform"},
+		})
+		if err != nil {
+			return nil, err
+		}
+		opts = append(opts, option.WithTokenSource(ts))
 	}
 
 	instanceAdminClient, err := instancev1.NewInstanceAdminClient(ctx, opts...)

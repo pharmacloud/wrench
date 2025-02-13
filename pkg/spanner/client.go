@@ -30,6 +30,7 @@ import (
 	databasepb "cloud.google.com/go/spanner/admin/database/apiv1/databasepb"
 	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
 	"github.com/hashicorp/go-multierror"
+	"google.golang.org/api/impersonate"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 )
@@ -57,6 +58,17 @@ func NewClient(ctx context.Context, config *Config) (*Client, error) {
 
 	if config.CredentialsFile != "" {
 		opts = append(opts, option.WithCredentialsFile(config.CredentialsFile))
+	}
+
+	if config.ImpersonateServiceAccount != "" {
+		ts, err := impersonate.CredentialsTokenSource(ctx, impersonate.CredentialsConfig{
+			TargetPrincipal: config.ImpersonateServiceAccount,
+			Scopes:          []string{"https://www.googleapis.com/auth/cloud-platform"},
+		})
+		if err != nil {
+			return nil, err
+		}
+		opts = append(opts, option.WithTokenSource(ts))
 	}
 
 	spannerClient, err := spanner.NewClient(ctx, config.URL(), opts...)
