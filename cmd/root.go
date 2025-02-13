@@ -35,13 +35,14 @@ var (
 )
 
 var (
-	project         string
-	instance        string
-	database        string
-	directory       string
-	schemaFile      string
-	credentialsFile string
-	timeout         time.Duration
+	project            string
+	instance           string
+	database           string
+	directory          string
+	schemaFile         string
+	migrationTableName string
+	credentialsFile    string
+	timeout            time.Duration
 )
 
 var rootCmd = &cobra.Command{
@@ -72,6 +73,7 @@ func init() {
 	rootCmd.PersistentFlags().StringVar(&database, flagNameDatabase, spannerDatabaseID(), "Cloud Spanner database name (optional. if not set, will use $SPANNER_DATABASE_ID value)")
 	rootCmd.PersistentFlags().StringVar(&directory, flagNameDirectory, "", "Directory that schema file placed (required)")
 	rootCmd.PersistentFlags().StringVar(&schemaFile, flagNameSchemaFile, "", "Name of schema file (optional. if not set, will use default 'schema.sql' file name)")
+	rootCmd.PersistentFlags().StringVar(&migrationTableName, flagNameMigrationTable, defaultMigrationTableName, "Directory that schema file placed (required)")
 	rootCmd.PersistentFlags().StringVar(&credentialsFile, flagCredentialsFile, "", "Specify Credentials File")
 	rootCmd.PersistentFlags().DurationVar(&timeout, flagTimeout, time.Hour, "Context timeout")
 
